@@ -1,0 +1,11 @@
+version: '3'
+services:
+  apm_server:
+    container_name: apm-server
+    user: apm-server
+    image: docker.elastic.co/apm/apm-server:7.12.1
+    command: --strict.perms=false -e -E output.elasticsearch.hosts=["$ES_HOST:$ES_PORT"]
+    # volumes:
+      # - ./apm-server.docker.yml:/usr/share/apm-server/apm-server.yml:ro
+    ports:
+      - "8200:8200"

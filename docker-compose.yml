@@ -1,0 +1,50 @@
+version: '3'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    mem_limit: 1g
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - "9201:9200"
+      - "9301:9300"
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.12.1
+    ports:
+      - "5601:5601"
+    environment:
+        ELASTICSEARCH_URL: http://elasticsearch:9200
+        ELASTICSEARCH_USERNAME: "elastic"
+        ELASTICSEARCH_PASSWORD: "changeme"
+    depends_on:
+      - elasticsearch
+  # apm_server:
+  #   container_name: apm-server
+  #   user: apm-server
+  #   image: docker.elastic.co/apm/apm-server:7.12.1
+  #   command: --strict.perms=false -e -E output.elasticsearch.hosts=["host.docker.internal:9201"]
+  #   # volumes:
+  #     # - ./apm-server.docker.yml:/usr/share/apm-server/apm-server.yml:ro
+  #   ports:
+  #     - "8200:8200"
+  #   depends_on:
+  #     - elasticsearch
+  #     - kibana
+volumes:
+  esdata1: {}
+  dbvolumn02: {}
